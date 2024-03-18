@@ -14,8 +14,8 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise <void>
             break;
         case 'POST':
             try {
-                const { name, email } = req.body;
-                const userId: number = await createUser(name, email);
+                const { name, email , password } = req.body;
+                const userId: number = await createUser(name, email , password);
                 res.status(201).json({ userId , name, email });
             } catch (error) {
                 // @ts-ignore
@@ -26,3 +26,4 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise <void>
             res.status(405).json({ message: 'Method Not Allowed' });
     }
 };
+
