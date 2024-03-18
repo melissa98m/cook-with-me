@@ -1,5 +1,6 @@
 import mysql, { MysqlError } from 'mysql';
 import { Request, Response } from 'express';
+import bcrypt from 'bcrypt';
 
 const connection : mysql.Connection = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -12,20 +13,27 @@ export interface User {
     id: number;
     name: string;
     email: string;
+    password: string
+
 }
 
-export const createUser = (name: string, email: string): Promise<number> => {
-    return new Promise((resolve, reject):void => {
-        connection.query('INSERT INTO users (name, email) VALUES (?, ?)', [name, email], (error: MysqlError | null, results: any): void => {
-            if (error) {
-                reject(error);
+export const createUser = (name: string, email: string, password: string): Promise<number> => {
+    return new Promise((resolve, reject) => {
+        bcrypt.hash(password, 10, (hashError, hashedPassword) => {
+            if (hashError) {
+                reject(hashError);
             } else {
-                resolve(results.insertId);
+                connection.query('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [name, email, hashedPassword], (error: MysqlError | null, results: any): void => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(results.insertId);
+                    }
+                });
             }
         });
     });
 };
-
 export const getUsers = (): Promise<User[]> => {
     return new Promise((resolve, reject): void => {
         connection.query('SELECT * FROM users', (error: MysqlError | null, results: any[]): void => {
@@ -54,7 +62,7 @@ export const getUserById = (userId: number ): Promise<User | null> => {
     });
 };
 
-export const updateUser = (userId: number, name: string, email: string): Promise<void> => {
+export const updateUser = (userId: string, name: string, email: string): Promise<void> => {
     return new Promise((resolve, reject): void => {
         connection.query('UPDATE users SET name = ?, email = ? WHERE id = ?', [name, email, userId], (error: MysqlError | null) :void => {
             if (error) {
