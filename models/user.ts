@@ -1,7 +1,7 @@
 import mysql, { MysqlError } from 'mysql';
 import { Request, Response } from 'express';
 
-const connection = mysql.createConnection({
+const connection : mysql.Connection = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
@@ -15,8 +15,8 @@ export interface User {
 }
 
 export const createUser = (name: string, email: string): Promise<number> => {
-    return new Promise((resolve, reject) => {
-        connection.query('INSERT INTO users (name, email) VALUES (?, ?)', [name, email], (error: MysqlError | null, results: any) => {
+    return new Promise((resolve, reject):void => {
+        connection.query('INSERT INTO users (name, email) VALUES (?, ?)', [name, email], (error: MysqlError | null, results: any): void => {
             if (error) {
                 reject(error);
             } else {
@@ -27,8 +27,8 @@ export const createUser = (name: string, email: string): Promise<number> => {
 };
 
 export const getUsers = (): Promise<User[]> => {
-    return new Promise((resolve, reject) => {
-        connection.query('SELECT * FROM users', (error: MysqlError | null, results: any[]) => {
+    return new Promise((resolve, reject): void => {
+        connection.query('SELECT * FROM users', (error: MysqlError | null, results: any[]): void => {
             if (error) {
                 reject(error);
             } else {
@@ -38,9 +38,9 @@ export const getUsers = (): Promise<User[]> => {
     });
 };
 
-export const getUserById = (userId: string | number | boolean | null | Object | List): Promise<User | null> => {
-    return new Promise((resolve, reject) => {
-        connection.query('SELECT * FROM users WHERE id = ?', [userId], (error: MysqlError | null, results: any[]) => {
+export const getUserById = (userId: number ): Promise<User | null> => {
+    return new Promise((resolve, reject):void => {
+        connection.query('SELECT * FROM users WHERE id = ?', [userId], (error: MysqlError | null, results: any[]): void => {
             if (error) {
                 reject(error);
             } else {
@@ -55,8 +55,8 @@ export const getUserById = (userId: string | number | boolean | null | Object | 
 };
 
 export const updateUser = (userId: number, name: string, email: string): Promise<void> => {
-    return new Promise((resolve, reject) => {
-        connection.query('UPDATE users SET name = ?, email = ? WHERE id = ?', [name, email, userId], (error: MysqlError | null) => {
+    return new Promise((resolve, reject): void => {
+        connection.query('UPDATE users SET name = ?, email = ? WHERE id = ?', [name, email, userId], (error: MysqlError | null) :void => {
             if (error) {
                 reject(error);
             } else {
@@ -67,8 +67,8 @@ export const updateUser = (userId: number, name: string, email: string): Promise
 };
 
 export const deleteUser = (userId: number): Promise<void> => {
-    return new Promise((resolve, reject) => {
-        connection.query('DELETE FROM users WHERE id = ?', [userId], (error: MysqlError | null) => {
+    return new Promise((resolve, reject) : void => {
+        connection.query('DELETE FROM users WHERE id = ?', [userId], (error: MysqlError | null): void => {
             if (error) {
                 reject(error);
             } else {
